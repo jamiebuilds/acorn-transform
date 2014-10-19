@@ -326,6 +326,46 @@ function printer(node, print) {
     case 'DebuggerStatement':
       return 'debugger;';
 
+    case 'XJSAttribute':
+      var code = print(node.name);
+      if (node.value) code += '=' + print(node.value);
+      return code;
+
+    case 'XJSIdentifier':
+      return node.name;
+
+    case 'XJSNamespacedName':
+      return print(node.namespace) + ':' + print(node.name);
+
+    case 'XJSMemberExpression':
+      return print(node.object) + '.' + print(node.property);
+
+    case 'XJSSpreadAttribute':
+      return '{...' + print(node.argument) + '}';
+
+    case 'XJSExpressionContainer':
+      return '{' + print(node.expression) + '}';
+
+    case 'XJSElement':
+      throw new Error('XJSElement');
+
+    case 'XJSOpeningElement':
+      var code = '<' + print(node.name);
+      if (node.attributes.length < 0) {
+        code += ' ' + node.attributes.map(print).join(' ');
+      }
+      code += node.selfClosing ? ' />' : '>';
+      return code;
+
+    case 'XJSClosingElement':
+      return '</' + node.name + '>';
+
+    case 'XJSText':
+      return node.value;
+
+    case 'XJSEmptyExpression':
+      return '';
+
     default:
       console.log('>> ' + node.type);
       return;
